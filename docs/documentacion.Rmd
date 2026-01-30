@@ -1,0 +1,3 @@
+library(DiagrammeR)
+
+mermaid(" flowchart LR A[Config cartera CSV/YAML] --\> B[Descarga precios Yahoo] B --\> C[Limpieza y transformación] C --\> D[Indicadores técnicos] D --\> E[Dataframe final] E --\> F[Reporte HTML/PDF] E --\> G[Alertas Telegram] E --\> H[Logs] ")

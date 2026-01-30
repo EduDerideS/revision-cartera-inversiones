@@ -1,0 +1,17 @@
+id,fase,tarea,inicio,fin,responsable
+A1,Setup,A1 • Estructura repo + carpetas,2026-01-01,2026-01-02,Eduardo
+A2,Setup,A2 • Config cartera (CSV/YAML) + umbrales,2026-01-03,2026-01-04,Eduardo
+B1,Datos,B1 • Descarga precios Yahoo Finance,2026-01-05,2026-01-07,Eduardo
+B2,Datos,B2 • Limpieza/normalización series,2026-01-08,2026-01-09,Eduardo
+C1,Métricas,C1 • Valor actual + P/L,2026-01-10,2026-01-11,Eduardo
+C2,Métricas,C2 • Dividendos + TIR mensual,2026-01-12,2026-01-14,Eduardo
+C3,Métricas,C3 • Indicadores (SMA/RSI/SlowD),2026-01-15,2026-01-17,Eduardo
+D1,MVP,D1 • Dataframe final (estructura objetivo),2026-01-18,2026-01-19,Eduardo
+D2,MVP,D2 • Export outputs (CSV/RDS) + logs,2026-01-20,2026-01-21,Eduardo
+D3,MVP,D3 • Automatización semanal (cron),2026-01-22,2026-01-23,Eduardo
+E1,Docs,E1 • README + supuestos + cómo ejecutar,2026-01-24,2026-01-25,Eduardo
+E2,Docs,E2 • Diagrama pipeline (Mermaid/Visio),2026-01-26,2026-01-27,Eduardo
+E3,Docs,E3 • Model card (Vetiver-style) + QA,2026-01-28,2026-01-29,Eduardo
+F1,Alertas,F1 • Telegram: envío básico con httr2,2026-01-30,2026-01-31,Eduardo
+F2,Alertas,F2 • Umbrales + reglas + formato msg,2026-02-01,2026-02-03,Eduardo
+F3,Alertas,F3 • Pruebas end-to-end,2026-02-04,2026-02-05,Eduardo
