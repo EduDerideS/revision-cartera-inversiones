@@ -1,0 +1,3 @@
+Nemotecnico,purchase_price,current_price,initial_value,current_value,ganancia_perdida,dividendos_recibidos,TIR_mensual_con_dividendos,SMA,SMA1,SlowD,RSI
+AAPL,150,259.48,1500,2594.8,1144.8,50,0.05,236.65,268.3,0.73,48.44
+MSFT,300,430.29,1500,2151.45,671.45,20,0.04,485.94,476.12,0.63,32.63
