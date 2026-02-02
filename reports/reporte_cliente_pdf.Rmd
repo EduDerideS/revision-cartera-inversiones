@@ -1,0 +1,129 @@
+---
+title: "Informe de Cartera — Revisión Periódica"
+subtitle: "Reporte para Cliente"
+author: "Eduardo Deride Silva"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+geometry: margin=1in
+fontsize: 11pt
+params:
+  cartera_path: "data/cartera.csv"
+  cliente_nombre: "Cliente"
+  asesor_nombre: "Eduardo Deride Silva"
+  fecha_reporte: ""
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{float}
+  - \usepackage{fancyhdr}
+  - \usepackage{titlesec}
+  - \usepackage{xcolor}
+  - \usepackage{hyperref}
+  - \hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+  - \definecolor{Accent}{HTML}{0F4C81}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \lhead{\textcolor{Accent}{Informe de Cartera}}
+  - \rhead{\textcolor{Accent}{\thepage}}
+  - \renewcommand{\headrulewidth}{0.4pt}
+  - \titleformat{\section}{\Large\bfseries\color{Accent}}{\thesection}{1em}{}
+  - \titleformat{\subsection}{\large\bfseries\color{Accent}}{\thesubsection}{1em}{}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+source("R/4_portfolio.R")
+source("R/1_ data.R")
+source("R/2_transformaciones.R")
+source("R/3_indicadores.R")
+
+fmt_num <- function(x) ifelse(is.na(x), "", formatC(x, format="f", digits=2, big.mark=".", decimal.mark=","))
+fmt_pct <- function(x) ifelse(is.na(x), "", paste0(formatC(100*x, format="f", digits=2, decimal.mark=","), "\\%"))
+fecha_rep <- ifelse(nzchar(params$fecha_reporte), params$fecha_reporte, format(Sys.Date(), "%Y-%m-%d"))
+```
+# Construcción de datos
+
+```{r construir_datos}
+cuadro <- build_cuadro_indicadores(params$cartera_path)
+
+cuadro_signals <- cuadro %>%
+  mutate(
+    tendencia_lp = case_when(
+      is.na(current_price) | is.na(SMA) ~ "Sin señal",
+      current_price >= SMA ~ "Alcista (sobre SMA200)",
+      TRUE ~ "Bajista (bajo SMA200)"
+    ),
+    tendencia_mp = case_when(
+      is.na(current_price) | is.na(SMA1) ~ "Sin señal",
+      current_price >= SMA1 ~ "Alcista (sobre SMA50)",
+      TRUE ~ "Bajista (bajo SMA50)"
+    ),
+    estado_rsi = case_when(
+      is.na(RSI) ~ "Sin señal",
+      RSI >= 70 ~ "Sobrecompra (≥70)",
+      RSI <= 30 ~ "Sobreventa (≤30)",
+      TRUE ~ "Neutral"
+    )
+  )
+```
+
+# Tabla de posiciones e indicadores
+
+```{r tabla_indicadores, results='asis'}
+tabla <- cuadro_signals %>%
+  transmute(
+    Nemotecnico,
+    `Precio compra` = purchase_price,
+    `Precio actual` = current_price,
+    `Valor inicial` = initial_value,
+    `Valor actual` = current_value,
+    `G/P` = ganancia_perdida,
+    `Dividendos` = dividendos_recibidos,
+    `TIR mensual` = TIR_mensual_con_dividendos,
+    `SMA200` = SMA,
+    `SMA50` = SMA1,
+    `SlowD` = SlowD,
+    `RSI` = RSI,
+    `Tendencia LP` = tendencia_lp,
+    `Tendencia MP` = tendencia_mp,
+    `RSI (estado)` = estado_rsi
+  ) %>%
+  mutate(
+    across(c(`Precio compra`,`Precio actual`,`Valor inicial`,`Valor actual`,`G/P`,`Dividendos`,`SMA200`,`SMA50`,`SlowD`,`RSI`),
+           ~ fmt_num(.x)),
+    `TIR mensual` = fmt_pct(`TIR mensual`)
+  )
+
+kable(tabla, format = "latex", booktabs = TRUE, longtable = TRUE, align = "l") %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 9) %>%
+  column_spec(1, bold = TRUE)
+```
+
+
+# Comentarios técnicos por activo
+
+```{r comentarios, results='asis'}
+comentarios <- cuadro_signals %>%
+  transmute(
+    Nemotecnico,
+    Comentario = paste0(
+      "Tendencia LP: ", tendencia_lp,
+      " | Tendencia MP: ", tendencia_mp,
+      " | RSI: ", fmt_num(RSI), " (", estado_rsi, ")."
+    )
+  )
+
+kable(comentarios, format = "latex", booktabs = TRUE, longtable = TRUE, align = "l") %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 10) %>%
+  column_spec(1, bold = TRUE)
+```

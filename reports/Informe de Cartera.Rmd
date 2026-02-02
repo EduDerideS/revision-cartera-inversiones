@@ -1,0 +1,88 @@
+---
+title: "Informe de Cartera"
+author: "EduDerideS"
+date: "2026-02-02"
+output: pdf_document
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: false
+geometry: margin=1in
+fontsize: 11pt
+params:
+  cartera_path: "data/cartera.csv"
+  cliente_nombre: "Cliente"
+  asesor_nombre: "Eduardo Deride Silva"
+  fecha_reporte: ""
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{float}
+  - \usepackage{fancyhdr}
+  - \usepackage{titlesec}
+  - \usepackage{xcolor}
+  - \usepackage{hyperref}
+  - \hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+  - \definecolor{Accent}{HTML}{0F4C81}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \lhead{\textcolor{Accent}{Informe de Cartera}}
+  - \rhead{\textcolor{Accent}{\thepage}}
+  - \renewcommand{\headrulewidth}{0.4pt}
+  - \titleformat{\section}{\Large\bfseries\color{Accent}}{\thesection}{1em}{}
+  - \titleformat{\subsection}{\large\bfseries\color{Accent}}{\thesubsection}{1em}{}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(dplyr)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+
+# Tu pipeline (tal como lo tienes)
+source("R/4_portfolio.R")
+source("R/1_ data.R")
+source("R/2_transformaciones.R")
+source("R/3_indicadores.R")
+
+# Helpers formato (PDF / LaTeX)
+fmt_num <- function(x) ifelse(is.na(x), "", formatC(x, format="f", digits=2, big.mark=".", decimal.mark=","))
+fmt_pct <- function(x) ifelse(is.na(x), "", paste0(formatC(100*x, format="f", digits=2, decimal.mark=","), "\\%"))
+
+fecha_rep <- ifelse(nzchar(params$fecha_reporte), params$fecha_reporte, format(Sys.Date(), "%Y-%m-%d"))
+
+```markdown
+\begin{center}
+{\Large \textbf{Informe de Cartera — Revisión Periódica}}\\
+\vspace{0.15cm}
+{\normalsize Cliente: \textbf{`r params$cliente_nombre`} \ \ \ \ \ \ \ \ Asesor: \textbf{`r params$asesor_nombre`} }\\
+{\normalsize Fecha: \textbf{`r fecha_rep`}}\\
+\end{center}
+
+\vspace{0.2cm}
+
+\noindent\textbf{Objetivo.} Este informe resume el desempeño de la cartera e incorpora dividendos y señales técnicas básicas (SMA/RSI/SlowD) como apoyo para decisiones.
+
+---
+
+```{r construir_cuadro}
+cuadro <- build_cuadro_indicadores(params$cartera_path)
+
+## Importante: tus `source()` deben calzar con tus nombres reales
+Tu proyecto tiene archivos como `R/2_transformaciones.R` y `R/3_indicadores.R` (según tus listados anteriores), y además `R/1_ data.R`.
+
+En el Rmd, los `source()` deben ser EXACTOS. Si tus archivos se llaman así:
+
+- `R/2_transformaciones.R`
+- `R/3_indicadores.R`
+
+entonces cambia tus `source()` a:
+
+```r
+source("R/2_transformaciones.R")
+source("R/3_indicadores.R")
